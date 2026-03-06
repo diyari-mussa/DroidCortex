@@ -1,0 +1,62 @@
+# DroidCortex — Sample Rule-Based Test Script
+# This test installs an APK, launches it, checks it's running,
+# performs basic UI interactions, and verifies the app responds.
+
+name: "Basic App Smoke Test"
+mode: rules
+
+# APK path is set when creating the test run via the dashboard.
+# These steps assume the APK is already specified.
+
+steps:
+  # Step 1: Install the APK on the device
+  - action: install
+    params: {}
+    expected: "Success"
+    timeout: 120
+
+  # Step 2: Launch the app
+  - action: launch
+    params: {}
+    timeout: 30
+
+  # Step 3: Verify the app is running
+  - action: check_running
+    expected: "true"
+    timeout: 10
+
+  # Step 4: Wait for app to fully load
+  - action: wait
+    params:
+      seconds: 3
+
+  # Step 5: Take a screenshot for evidence
+  - action: screenshot
+    timeout: 10
+
+  # Step 6: Check if main activity is visible
+  - action: assert_text_visible
+    params:
+      text: "Welcome"  # Adjust to match your app's main screen text
+    timeout: 10
+
+  # Step 7: Tap on a button (adjust coordinates for your app)
+  - action: tap
+    params:
+      x: 540
+      y: 960
+      wait_after: 2
+    timeout: 10
+
+  # Step 8: Take another screenshot after interaction
+  - action: screenshot
+    timeout: 10
+
+  # Step 9: Press back
+  - action: press_back
+    timeout: 10
+
+  # Step 10: Verify app is still running (didn't crash)
+  - action: check_running
+    expected: "true"
+    timeout: 10

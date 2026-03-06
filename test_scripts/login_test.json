@@ -1,0 +1,65 @@
+{
+  "name": "Login Flow Test",
+  "mode": "rules",
+  "steps": [
+    {
+      "action": "install",
+      "params": {},
+      "expected": "Success",
+      "timeout": 120
+    },
+    {
+      "action": "launch",
+      "params": {},
+      "timeout": 30
+    },
+    {
+      "action": "check_running",
+      "expected": "true",
+      "timeout": 10
+    },
+    {
+      "action": "wait",
+      "params": { "seconds": 3 }
+    },
+    {
+      "action": "assert_text_visible",
+      "params": { "text": "Login" },
+      "timeout": 10
+    },
+    {
+      "action": "tap",
+      "params": { "x": 540, "y": 800, "wait_after": 1 },
+      "timeout": 10
+    },
+    {
+      "action": "input_text",
+      "params": { "text": "testuser@example.com" },
+      "timeout": 10
+    },
+    {
+      "action": "tap",
+      "params": { "x": 540, "y": 900, "wait_after": 1 },
+      "timeout": 10
+    },
+    {
+      "action": "input_text",
+      "params": { "text": "password123" },
+      "timeout": 10
+    },
+    {
+      "action": "tap",
+      "params": { "x": 540, "y": 1100, "wait_after": 3 },
+      "timeout": 10
+    },
+    {
+      "action": "screenshot",
+      "timeout": 10
+    },
+    {
+      "action": "check_running",
+      "expected": "true",
+      "timeout": 10
+    }
+  ]
+}

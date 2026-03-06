@@ -1,0 +1,25 @@
+# DroidCortex — AI Agent Test Configuration
+# In AI mode, the agent autonomously explores the app guided by the goal.
+
+name: "AI Exploratory Test"
+mode: ai
+
+ai_config:
+  # Which LLM provider to use: openai, anthropic, or google
+  provider: openai
+  model: gpt-4o
+
+  # The testing goal — tells the AI agent what to look for
+  goal: |
+    Thoroughly test this Android app:
+    1. Verify the app launches without crashing
+    2. Explore the main screen and identify all interactive elements
+    3. Navigate through all available screens/tabs
+    4. Test any input fields with sample data
+    5. Test edge cases (empty inputs, back navigation, rotation handling)
+    6. Look for crashes, ANRs, or unexpected behavior
+    7. Verify the app returns to expected state after interactions
+    Report any issues found.
+
+  # Maximum number of steps the AI agent can take
+  max_steps: 30
