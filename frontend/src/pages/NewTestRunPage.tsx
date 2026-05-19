@@ -34,6 +34,178 @@ const defaultSteps: StepDef[] = [
   { action: 'screenshot', params: {}, expected: '' },
 ];
 
+type ActionDoc = {
+  params: Record<string, unknown>;
+  expected: string;
+  paramsExample: string;
+  paramsHelp: string;
+  expectedHelp: string;
+};
+
+const ACTION_OPTIONS = [
+  'install', 'launch', 'check_running', 'wait', 'screenshot',
+  'tap', 'input_text', 'swipe', 'press_key', 'press_back',
+  'press_home', 'send_broadcast', 'send_intent', 'shell',
+  'assert_text_visible', 'assert_activity', 'force_stop',
+  'clear_data', 'logcat', 'uninstall',
+];
+
+const ACTION_DOCS: Record<string, ActionDoc> = {
+  install: {
+    params: {},
+    expected: 'success',
+    paramsExample: '{}',
+    paramsHelp: 'Installs the selected APK. Optionally set apk_path to override the file path.',
+    expectedHelp: 'Optional. Success is already checked automatically.',
+  },
+  launch: {
+    params: {},
+    expected: 'app_running',
+    paramsExample: '{"package":"com.example.app","activity":".MainActivity"}',
+    paramsHelp: 'Usually leave empty. package and activity are optional overrides.',
+    expectedHelp: 'Optional. Launch already checks that the app is running.',
+  },
+  check_running: {
+    params: {},
+    expected: 'true',
+    paramsExample: '{"package":"com.example.app"}',
+    paramsHelp: 'Usually leave empty. package is optional if you want to check a different app.',
+    expectedHelp: 'Use true, false, yes, or running.',
+  },
+  wait: {
+    params: { seconds: 2 },
+    expected: '',
+    paramsExample: '{"seconds":2}',
+    paramsHelp: 'Pauses the test. duration also works as an alias for seconds.',
+    expectedHelp: 'Leave empty.',
+  },
+  screenshot: {
+    params: {},
+    expected: '',
+    paramsExample: '{}',
+    paramsHelp: 'Captures a screenshot from the current device screen.',
+    expectedHelp: 'Leave empty.',
+  },
+  tap: {
+    params: { x: 540, y: 960 },
+    expected: '',
+    paramsExample: '{"x":540,"y":960}',
+    paramsHelp: 'Screen coordinates are required. wait_after is optional.',
+    expectedHelp: 'Leave empty.',
+  },
+  input_text: {
+    params: { text: 'hello world' },
+    expected: '',
+    paramsExample: '{"text":"hello world"}',
+    paramsHelp: 'Types text into the focused input field.',
+    expectedHelp: 'Leave empty.',
+  },
+  swipe: {
+    params: { x1: 540, y1: 1600, x2: 540, y2: 600, duration_ms: 300 },
+    expected: '',
+    paramsExample: '{"x1":540,"y1":1600,"x2":540,"y2":600,"duration_ms":300}',
+    paramsHelp: 'Start and end coordinates are required. duration_ms and wait_after are optional.',
+    expectedHelp: 'Leave empty.',
+  },
+  press_key: {
+    params: { keycode: 'KEYCODE_ENTER' },
+    expected: '',
+    paramsExample: '{"keycode":"KEYCODE_ENTER"}',
+    paramsHelp: 'Use keycode or key. Android names like KEYCODE_ENTER and numeric codes both work.',
+    expectedHelp: 'Leave empty.',
+  },
+  press_back: {
+    params: {},
+    expected: '',
+    paramsExample: '{}',
+    paramsHelp: 'Presses the Android Back button.',
+    expectedHelp: 'Leave empty.',
+  },
+  press_home: {
+    params: {},
+    expected: '',
+    paramsExample: '{}',
+    paramsHelp: 'Presses the Android Home button.',
+    expectedHelp: 'Leave empty.',
+  },
+  send_broadcast: {
+    params: { action: 'com.example.SYNC', extras: { userId: '42' } },
+    expected: '',
+    paramsExample: '{"action":"com.example.SYNC","extras":{"userId":"42"}}',
+    paramsHelp: 'action is the broadcast action. extras is optional. package can be used to scope the broadcast.',
+    expectedHelp: 'Optional substring that must appear in the adb output.',
+  },
+  send_intent: {
+    params: { action: 'android.intent.action.VIEW', data_uri: 'https://example.com' },
+    expected: '',
+    paramsExample: '{"action":"android.intent.action.VIEW","data_uri":"https://example.com"}',
+    paramsHelp: 'action defaults to android.intent.action.VIEW. Use data_uri or uri, plus optional extras.',
+    expectedHelp: 'Optional. Pass or fail is based on adb success.',
+  },
+  shell: {
+    params: { command: 'pm list packages' },
+    expected: '',
+    paramsExample: '{"command":"pm list packages"}',
+    paramsHelp: 'Runs an adb shell command on the device.',
+    expectedHelp: 'Optional substring that must appear in the shell output.',
+  },
+  assert_text_visible: {
+    params: { text: 'Welcome' },
+    expected: 'Welcome',
+    paramsExample: '{"text":"Welcome"}',
+    paramsHelp: 'Checks the UI hierarchy for text. text can also be provided through expected.',
+    expectedHelp: 'Optional fallback text to search for.',
+  },
+  assert_activity: {
+    params: { activity: '.MainActivity' },
+    expected: '.MainActivity',
+    paramsExample: '{"activity":".MainActivity"}',
+    paramsHelp: 'Checks the currently focused activity. activity can also be provided through expected.',
+    expectedHelp: 'Optional fallback activity name to match.',
+  },
+  force_stop: {
+    params: {},
+    expected: '',
+    paramsExample: '{"package":"com.example.app"}',
+    paramsHelp: 'Usually leave empty. package is optional if you want to stop a different app.',
+    expectedHelp: 'Leave empty.',
+  },
+  clear_data: {
+    params: {},
+    expected: '',
+    paramsExample: '{"package":"com.example.app"}',
+    paramsHelp: 'Usually leave empty. package is optional if you want to clear a different app.',
+    expectedHelp: 'Leave empty.',
+  },
+  logcat: {
+    params: { lines: 50, tag: 'MyApp' },
+    expected: '',
+    paramsExample: '{"lines":50,"tag":"MyApp"}',
+    paramsHelp: 'Reads recent logcat lines. tag is optional.',
+    expectedHelp: 'Optional substring that must appear in the captured logs.',
+  },
+  uninstall: {
+    params: {},
+    expected: '',
+    paramsExample: '{"package":"com.example.app"}',
+    paramsHelp: 'Usually leave empty. package is optional if you want to uninstall a different app.',
+    expectedHelp: 'Leave empty.',
+  },
+};
+
+const FALLBACK_ACTION_DOC: ActionDoc = {
+  params: {},
+  expected: '',
+  paramsExample: '{}',
+  paramsHelp: 'Enter a valid JSON object for the action parameters.',
+  expectedHelp: 'Optional expected value.',
+};
+
+const getActionDoc = (action: string): ActionDoc => ACTION_DOCS[action] ?? FALLBACK_ACTION_DOC;
+
+const cloneParams = (params: Record<string, unknown>): Record<string, unknown> =>
+  JSON.parse(JSON.stringify(params));
+
 export default function NewTestRunPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<WizardStep>('apk');
@@ -91,7 +263,11 @@ export default function NewTestRunPage() {
   };
 
   const addStep = () => {
-    setSteps((prev) => [...prev, { action: 'tap', params: { x: 0, y: 0 }, expected: '' }]);
+    const actionDoc = getActionDoc('tap');
+    setSteps((prev) => [
+      ...prev,
+      { action: 'tap', params: cloneParams(actionDoc.params), expected: actionDoc.expected },
+    ]);
   };
 
   const removeStep = (index: number) => {
@@ -101,6 +277,22 @@ export default function NewTestRunPage() {
   const updateStep = (index: number, field: keyof StepDef, value: any) => {
     setSteps((prev) =>
       prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
+    );
+  };
+
+  const updateStepAction = (index: number, action: string) => {
+    const actionDoc = getActionDoc(action);
+    setSteps((prev) =>
+      prev.map((s, i) => (
+        i === index
+          ? {
+              ...s,
+              action,
+              params: cloneParams(actionDoc.params),
+              expected: actionDoc.expected,
+            }
+          : s
+      ))
     );
   };
 
@@ -125,6 +317,11 @@ export default function NewTestRunPage() {
     if (mode === 'rules' && useScriptEditor && scriptText.trim()) {
       try {
         finalSteps = JSON.parse(scriptText);
+        if (!Array.isArray(finalSteps)) {
+          setError('Script editor content must be a JSON array of steps.');
+          setSubmitting(false);
+          return;
+        }
       } catch {
         try {
           // Attempt basic YAML-like parsing (simplified)
@@ -132,6 +329,17 @@ export default function NewTestRunPage() {
           setSubmitting(false);
           return;
         } catch { /* no-op */ }
+      }
+    }
+
+    if (mode === 'rules') {
+      const invalidParamsIndex = finalSteps.findIndex(
+        (ruleStep) => !ruleStep.params || typeof ruleStep.params !== 'object' || Array.isArray(ruleStep.params)
+      );
+      if (invalidParamsIndex !== -1) {
+        setError(`Step ${invalidParamsIndex + 1} params must be a valid JSON object.`);
+        setSubmitting(false);
+        return;
       }
     }
 
@@ -373,44 +581,58 @@ export default function NewTestRunPage() {
                 />
               ) : (
                 <div className="space-y-2">
-                  {steps.map((s, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-gray-900 border border-gray-800 rounded-lg p-2">
-                      <span className="text-xs text-gray-500 w-6">{i + 1}.</span>
-                      <select
-                        value={s.action}
-                        onChange={(e) => updateStep(i, 'action', e.target.value)}
-                        className="bg-gray-800 text-sm text-white rounded px-2 py-1 border border-gray-700"
-                      >
-                        {[
-                          'install', 'launch', 'check_running', 'wait', 'screenshot',
-                          'tap', 'input_text', 'swipe', 'press_key', 'press_back',
-                          'press_home', 'send_broadcast', 'send_intent', 'shell',
-                          'assert_text_visible', 'assert_activity', 'force_stop',
-                          'clear_data', 'logcat', 'uninstall',
-                        ].map((a) => (
-                          <option key={a} value={a}>{a}</option>
-                        ))}
-                      </select>
-                      <input
-                        value={typeof s.params === 'string' ? s.params : JSON.stringify(s.params)}
-                        onChange={(e) => {
-                          try { updateStep(i, 'params', JSON.parse(e.target.value)); }
-                          catch { updateStep(i, 'params', e.target.value); }
-                        }}
-                        placeholder="params (JSON)"
-                        className="flex-1 bg-gray-800 text-xs text-gray-300 rounded px-2 py-1 border border-gray-700 font-mono"
-                      />
-                      <input
-                        value={s.expected || ''}
-                        onChange={(e) => updateStep(i, 'expected', e.target.value)}
-                        placeholder="expected"
-                        className="w-28 bg-gray-800 text-xs text-gray-300 rounded px-2 py-1 border border-gray-700"
-                      />
-                      <button onClick={() => removeStep(i)} className="text-gray-500 hover:text-red-400">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
+                  {steps.map((s, i) => {
+                    const actionDoc = getActionDoc(s.action);
+                    const paramsInvalid = typeof s.params === 'string';
+
+                    return (
+                      <div key={i} className="bg-gray-900 border border-gray-800 rounded-lg p-2 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500 w-6">{i + 1}.</span>
+                          <select
+                            value={s.action}
+                            onChange={(e) => updateStepAction(i, e.target.value)}
+                            className="bg-gray-800 text-sm text-white rounded px-2 py-1 border border-gray-700"
+                          >
+                            {ACTION_OPTIONS.map((a) => (
+                              <option key={a} value={a}>{a}</option>
+                            ))}
+                          </select>
+                          <input
+                            value={typeof s.params === 'string' ? s.params : JSON.stringify(s.params)}
+                            onChange={(e) => {
+                              try { updateStep(i, 'params', JSON.parse(e.target.value)); }
+                              catch { updateStep(i, 'params', e.target.value); }
+                            }}
+                            placeholder={actionDoc.paramsExample}
+                            title={actionDoc.paramsHelp}
+                            className={`flex-1 bg-gray-800 text-xs rounded px-2 py-1 border font-mono ${
+                              paramsInvalid ? 'border-red-500 text-red-200' : 'border-gray-700 text-gray-300'
+                            }`}
+                          />
+                          <input
+                            value={s.expected || ''}
+                            onChange={(e) => updateStep(i, 'expected', e.target.value)}
+                            placeholder={actionDoc.expected || 'optional'}
+                            title={actionDoc.expectedHelp}
+                            className="w-28 bg-gray-800 text-xs text-gray-300 rounded px-2 py-1 border border-gray-700"
+                          />
+                          <button onClick={() => removeStep(i)} className="text-gray-500 hover:text-red-400">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="pl-8 text-[11px] leading-5 text-gray-500">
+                          <span className="text-gray-400">Example:</span>{' '}
+                          <span className="font-mono text-gray-300">{actionDoc.paramsExample}</span>
+                          <span>{' '}· {actionDoc.paramsHelp}</span>
+                          <span>{' '}· <span className="text-gray-400">Expected:</span> {actionDoc.expectedHelp}</span>
+                          {paramsInvalid && (
+                            <span className="text-red-400">{' '}· Invalid JSON. Use a JSON object like {actionDoc.paramsExample}</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                   <button
                     onClick={addStep}
                     className="flex items-center gap-1 text-xs text-cortex-400 hover:text-cortex-300"

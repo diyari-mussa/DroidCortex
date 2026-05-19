@@ -153,28 +153,30 @@ Open **http://localhost:5173** in your browser.
 
 ### Available Test Actions
 
-| Action | Params | Description |
-|--------|--------|-------------|
-| `install` | — | Install the APK on device |
-| `launch` | — | Launch the app |
-| `check_running` | — | Verify app is running |
-| `tap` | `x`, `y` | Tap screen coordinates |
-| `input_text` | `text` | Type text |
-| `swipe` | `x1`, `y1`, `x2`, `y2`, `duration_ms` | Swipe gesture |
-| `press_key` | `key` | Press keycode (e.g., KEYCODE_ENTER) |
-| `press_back` | — | Press back button |
-| `press_home` | — | Press home button |
-| `send_broadcast` | `action`, `extras` | Send broadcast intent |
-| `send_intent` | `action`, `component`, `extras` | Send explicit intent |
-| `shell` | `command` | Run arbitrary shell command |
-| `wait` | `seconds` | Wait N seconds |
-| `screenshot` | — | Capture screenshot |
-| `assert_text_visible` | `text` | Assert text visible in UI |
-| `assert_activity` | `activity` | Assert current activity |
-| `logcat` | `lines`, `filter` | Capture logcat |
-| `force_stop` | — | Force stop the app |
-| `clear_data` | — | Clear app data |
-| `uninstall` | — | Uninstall the app |
+The **Params** field in the visual editor must be a valid JSON object. For actions that do not need extra input, use `{}`.
+
+| Action | Params JSON example | Notes |
+|--------|---------------------|-------|
+| `install` | `{}` | Installs the selected APK. Optional override: `{"apk_path":"D:/builds/app.apk"}` |
+| `launch` | `{}` | Launches the selected APK. Optional overrides: `{"package":"com.example.app","activity":".MainActivity"}` |
+| `check_running` | `{}` | Checks whether the app is running. Optional override: `{"package":"com.example.app"}`. Set `expected` to `true` or `false`. |
+| `tap` | `{"x":540,"y":960}` | Screen coordinates are required. Optional: `wait_after`. |
+| `input_text` | `{"text":"hello world"}` | Types into the focused input field. |
+| `swipe` | `{"x1":540,"y1":1600,"x2":540,"y2":600,"duration_ms":300}` | Swipe from one point to another. Optional: `wait_after`. |
+| `press_key` | `{"keycode":"KEYCODE_ENTER"}` | You can use `keycode` or `key`. Numeric keycodes also work. |
+| `press_back` | `{}` | Presses the Back button. |
+| `press_home` | `{}` | Presses the Home button. |
+| `send_broadcast` | `{"action":"com.example.SYNC","extras":{"userId":"42"}}` | Optional: `package`. `expected` may be used as a substring check against adb output. |
+| `send_intent` | `{"action":"android.intent.action.VIEW","data_uri":"https://example.com"}` | Optional: `uri` instead of `data_uri`, plus `extras`. |
+| `shell` | `{"command":"pm list packages"}` | Runs an adb shell command. `expected` may be used as a substring check against shell output. |
+| `wait` | `{"seconds":2}` | `duration` also works as an alias for `seconds`. |
+| `screenshot` | `{}` | Captures a screenshot. |
+| `assert_text_visible` | `{"text":"Welcome"}` | Checks the dumped UI hierarchy for text. `expected` can also be used instead of `params.text`. |
+| `assert_activity` | `{"activity":".MainActivity"}` | Checks the currently focused activity. `expected` can also be used instead of `params.activity`. |
+| `logcat` | `{"lines":50,"tag":"MyApp"}` | Captures recent log lines. `expected` may be used as a substring check. |
+| `force_stop` | `{}` | Stops the selected APK. Optional override: `{"package":"com.example.app"}` |
+| `clear_data` | `{}` | Clears app data for the selected APK. Optional override: `{"package":"com.example.app"}` |
+| `uninstall` | `{}` | Uninstalls the selected APK. Optional override: `{"package":"com.example.app"}` |
 
 ### AI Agent Testing
 
